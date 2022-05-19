@@ -34,7 +34,7 @@ namespace Nasser.io.PUN2
         {
             if (roomInputName.text.Length > 0)
             {
-                PhotonNetwork.CreateRoom(roomInputName.text, new RoomOptions() { MaxPlayers = 10 });
+                PhotonNetwork.CreateRoom(roomInputName.text, new RoomOptions() { MaxPlayers = 10 , BroadcastPropsChangeToAll = true});
             }
         }
 
