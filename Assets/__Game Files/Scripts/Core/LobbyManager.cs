@@ -32,9 +32,9 @@ namespace Nasser.io.PUN2
 
         public void OnClickCreateRoom()
         {
-            if (roomInputName.text.Length>0)
+            if (roomInputName.text.Length > 0)
             {
-                PhotonNetwork.CreateRoom(roomInputName.text, new RoomOptions() { MaxPlayers = 10} );
+                PhotonNetwork.CreateRoom(roomInputName.text, new RoomOptions() { MaxPlayers = 10 });
             }
         }
 
@@ -42,7 +42,7 @@ namespace Nasser.io.PUN2
         {
             lobbyPanel.SetActive(false);
             roomPanel.SetActive(true);
-            roomName.text = "Room Name :"+PhotonNetwork.CurrentRoom.Name;
+            roomName.text = "Room Name :" + PhotonNetwork.CurrentRoom.Name;
             UpdatePlayersList();
         }
 
@@ -57,16 +57,16 @@ namespace Nasser.io.PUN2
 
         private void UpdateRoomList(List<RoomInfo> _roomList)
         {
-            foreach (RoomItem item in roomItemList )
+            foreach (RoomItem item in roomItemList)
             {
-                Destroy(item.gameObject);   
+                Destroy(item.gameObject);
             }
 
             roomItemList.Clear();
 
             foreach (RoomInfo item in _roomList)
             {
-                RoomItem newRoomItem =  Instantiate(roomItemPrefab, roomItemPrefabHolder);
+                RoomItem newRoomItem = Instantiate(roomItemPrefab, roomItemPrefabHolder);
                 newRoomItem.SetRoomName(item.Name);
                 roomItemList.Add(newRoomItem);
             }
@@ -80,13 +80,13 @@ namespace Nasser.io.PUN2
         public void OnClickLeaveRoom()
         {
             PhotonNetwork.LeaveRoom();
-           
+
         }
 
         public override void OnLeftRoom()
         {
-           roomPanel.SetActive(false);
-           lobbyPanel.SetActive(true);
+            roomPanel.SetActive(false);
+            lobbyPanel.SetActive(true);
         }
 
         public override void OnConnectedToMaster()
@@ -94,7 +94,7 @@ namespace Nasser.io.PUN2
             PhotonNetwork.JoinLobby();
         }
 
-        
+
         private void UpdatePlayersList()
         {
             foreach (PlayerItem item in playerItemsList)
@@ -106,16 +106,21 @@ namespace Nasser.io.PUN2
 
             if (PhotonNetwork.CurrentRoom == null) return;
 
-            foreach (KeyValuePair<int , Player> player in PhotonNetwork.CurrentRoom.Players)
+            foreach (KeyValuePair<int, Player> player in PhotonNetwork.CurrentRoom.Players)
             {
                 PlayerItem newPlayerItem = Instantiate(playerItemPrefab, playerItemPrefabHolder);
-               // newPlayerItem.SetPlayerName(newPlayerItem.name);
+                newPlayerItem.SetPlayerInfo(player.Value);
+
+                if (player.Value == PhotonNetwork.LocalPlayer)
+                {
+                    newPlayerItem.ApplyLocalChanges();
+                }
                 playerItemsList.Add(newPlayerItem);
             }
         }
         public override void OnPlayerEnteredRoom(Player newPlayer)
         {
-            UpdatePlayersList() ;
+            UpdatePlayersList();
         }
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {

@@ -425,7 +425,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65048ed8b3e4d60458f85e1b5b259e46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerName: {fileID: 0}
+  playerName: {fileID: 809722726675149350}
+  HightlightColor: {r: 1, g: 0.77560496, b: 0, a: 0.5882353}
+  rightArrow: {fileID: 809722726142403261}
+  LeftArrow: {fileID: 809722727403815355}
 --- !u!1 &809722727403815355
 GameObject:
   m_ObjectHideFlags: 0
