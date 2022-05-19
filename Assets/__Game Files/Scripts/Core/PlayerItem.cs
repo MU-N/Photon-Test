@@ -34,8 +34,16 @@ namespace Nasser.io.PUN2
         public void ApplyLocalChanges()
         {
             playerBGImage.color = HightlightColor;
-            rightArrow.SetActive(true);
-            LeftArrow.SetActive(true);
+            if (player == PhotonNetwork.LocalPlayer)
+            {
+                rightArrow.SetActive(true);
+                LeftArrow.SetActive(true);
+            }
+            else
+            {
+                rightArrow.SetActive(true);
+                LeftArrow.SetActive(true);
+            }
 
         }
 
