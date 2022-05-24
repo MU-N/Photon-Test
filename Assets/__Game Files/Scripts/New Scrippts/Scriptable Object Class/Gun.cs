@@ -7,8 +7,9 @@ namespace Nasser.io.PUN2
     public class Gun : ScriptableObject
     {
 
-        public string Name;
-        public float FireRate;
-        public GameObject ObjectPrefab;
+        public string gunName;
+        public float fireRate;
+        public float aimSpeed;
+        public GameObject objectPrefab;
     }
 }

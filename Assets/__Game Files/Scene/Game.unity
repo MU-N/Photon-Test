@@ -951,6 +951,7 @@ Transform:
   - {fileID: 67745569}
   - {fileID: 1704241434}
   - {fileID: 376938142}
+  - {fileID: 2133568463}
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -973,6 +974,7 @@ MonoBehaviour:
   whatIsGround:
     serializedVersion: 2
     m_Bits: 64
+  weaponParent: {fileID: 2133568463}
 --- !u!54 &811720723
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1003,6 +1005,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 811720721}
   cam: {fileID: 1704241434}
+  weapon: {fileID: 2133568463}
   xSensitivity: 200
   ySensitivity: 200
   maxYAnagle: 60
@@ -2276,8 +2279,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.553, z: 0.33}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 2133568463}
+  m_Children: []
   m_Father: {fileID: 811720721}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2475,12 +2477,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2133568462}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.406, y: -0.21499991, z: 0.699}
+  m_LocalPosition: {x: 0.406, y: 0.33800006, z: 1.029}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1704241434}
-  m_RootOrder: 0
+  m_Father: {fileID: 811720721}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2133568464
 MonoBehaviour:

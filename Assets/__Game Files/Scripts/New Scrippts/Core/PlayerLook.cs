@@ -5,6 +5,8 @@ namespace Nasser.io.PUN2
 {
     public class PlayerLook : MonoBehaviour
     {
+        #region Inspector Variables
+
         public static bool isCurserLocked = true;
         [SerializeField] Transform player;
         [SerializeField] Transform cam;
@@ -13,6 +15,9 @@ namespace Nasser.io.PUN2
         [SerializeField] float ySensitivity;
         [SerializeField] float maxYAnagle;
 
+        #endregion
+
+        #region Private Variables
         private float yInput;
         private float XInput;
 
@@ -25,6 +30,10 @@ namespace Nasser.io.PUN2
 
         Quaternion XQuaternion;
         Quaternion XQuaternionDelta;
+
+        #endregion
+
+        #region MonoBehaviour Callbacks
         void Start()
         {
             camCentre = cam.localRotation;
@@ -36,6 +45,9 @@ namespace Nasser.io.PUN2
             SetX();
             UpdateLockCurser();
         }
+        #endregion
+
+        #region Methods
 
         void SetY()
         {
@@ -75,5 +87,7 @@ namespace Nasser.io.PUN2
                     isCurserLocked = true;
             }
         }
+        #endregion
+       
     }
 }
