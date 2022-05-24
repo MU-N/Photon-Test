@@ -10,11 +10,6 @@ namespace Nasser.io.PUN2
         [SerializeField] TMP_InputField usernameInput;
         [SerializeField] TMP_Text buttonText;
 
-
-        private void Awake()
-        {
-            PhotonNetwork.AutomaticallySyncScene = true;
-        }
         public void OnClcickConnect()
         {
             if(usernameInput.text.Length > 0)
@@ -22,6 +17,7 @@ namespace Nasser.io.PUN2
                 PhotonNetwork.NickName = usernameInput.text;
                 buttonText.text = "Connecting...";
                 PhotonNetwork.ConnectUsingSettings();
+                PhotonNetwork.AutomaticallySyncScene = true;
             }
         }
 

@@ -25,16 +25,26 @@ namespace Nasser.io.PUN2
         [SerializeField] PlayerItem playerItemPrefab;
         [SerializeField] Transform playerItemPrefabHolder;
 
+        [SerializeField] GameObject playButton;
+
         private void Start()
         {
             PhotonNetwork.JoinLobby();
+        }
+        private void Update()
+        {
+            if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount >= 3)
+                playButton.SetActive(true);
+
+            else
+                playButton.SetActive(false);
         }
 
         public void OnClickCreateRoom()
         {
             if (roomInputName.text.Length > 0)
             {
-                PhotonNetwork.CreateRoom(roomInputName.text, new RoomOptions() { MaxPlayers = 10 , BroadcastPropsChangeToAll = true});
+                PhotonNetwork.CreateRoom(roomInputName.text, new RoomOptions() { MaxPlayers = 10, BroadcastPropsChangeToAll = true });
             }
         }
 
@@ -125,6 +135,11 @@ namespace Nasser.io.PUN2
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
             UpdatePlayersList();
+        }
+
+        public void OnClickPlayGameButton()
+        {
+            PhotonNetwork.LoadLevel("Game");
         }
     }
 }
