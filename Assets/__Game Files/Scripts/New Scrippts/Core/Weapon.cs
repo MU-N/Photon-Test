@@ -8,6 +8,8 @@ namespace Nasser.io.PUN2
         #region Inspector Variables
         [SerializeField] Gun[] loadout;
         [SerializeField] Transform weaponParent;
+        [SerializeField] GameObject bulletHolePrefab;
+        [SerializeField] LayerMask whatIsShoot;
         #endregion
 
         #region Private Variables

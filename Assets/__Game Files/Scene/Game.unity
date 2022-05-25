@@ -168,7 +168,7 @@ GameObject:
   - component: {fileID: 67745571}
   - component: {fileID: 67745570}
   m_Layer: 3
-  m_Name: er
+  m_Name: eyes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -361,7 +361,7 @@ GameObject:
   m_Component:
   - component: {fileID: 376938142}
   m_Layer: 3
-  m_Name: GroundCheckf
+  m_Name: GroundCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -944,14 +944,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 811720717}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 67745569}
   - {fileID: 1704241434}
   - {fileID: 376938142}
-  - {fileID: 2133568463}
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -968,7 +967,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 150
-  jumpForce: 250
+  jumpForce: 300
   groundCheckObject: {fileID: 376938142}
   groundCheckRaduis: 0.05
   whatIsGround:
@@ -1005,7 +1004,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 811720721}
   cam: {fileID: 1704241434}
-  weapon: {fileID: 2133568463}
   xSensitivity: 200
   ySensitivity: 200
   maxYAnagle: 60
@@ -1211,7 +1209,7 @@ GameObject:
   - component: {fileID: 1030963805}
   - component: {fileID: 1030963804}
   m_Layer: 3
-  m_Name: er (1)
+  m_Name: eyes
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2279,7 +2277,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.553, z: 0.33}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2133568463}
   m_Father: {fileID: 811720721}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2477,12 +2476,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2133568462}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.406, y: 0.33800006, z: 1.029}
+  m_LocalPosition: {x: 0.406, y: -0.21499991, z: 0.699}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 811720721}
-  m_RootOrder: 3
+  m_Father: {fileID: 1704241434}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2133568464
 MonoBehaviour:
@@ -2499,3 +2498,7 @@ MonoBehaviour:
   loadout:
   - {fileID: 11400000, guid: a7ad44bbbd46ec64ba199eba34062f23, type: 2}
   weaponParent: {fileID: 2133568463}
+  bulletHolePrefab: {fileID: 0}
+  whatIsShoot:
+    serializedVersion: 2
+    m_Bits: 0
