@@ -84,7 +84,8 @@ namespace Nasser.io.PUN2
                     anchor.localPosition = Vector3.Lerp(anchor.localPosition, hips.localPosition, Time.deltaTime * loadout[currentWeaponId].aimSpeed);
                 }
                 CheckShootInput();
-                view.RPC("RestWaponPosition", RpcTarget.All);
+                 view.RPC("RestWaponPosition", RpcTarget.All);
+                //RestWaponPosition();
             }
 
         }
@@ -128,7 +129,7 @@ namespace Nasser.io.PUN2
                     // shootingPlayers
                     if(hit.collider.gameObject.layer == playersLayer)
                     {
-                        // rpc for damage
+                        hit.collider.gameObject.GetPhotonView().RPC("TakeDamage", RpcTarget.All, loadout[currentWeaponId].damage);
                     }
                 }
             }
@@ -140,6 +141,11 @@ namespace Nasser.io.PUN2
             cooldown = loadout[currentWeaponId].fireRate;
         }
 
+        [PunRPC]
+        private void TakeDamage(int _amount)
+        {
+            GetComponent<PlayerMotion>().TakeDamageR(_amount);
+        }
         #endregion
 
     }

@@ -8,6 +8,7 @@ namespace Nasser.io.PUN2
     {
 
         public string gunName;
+        public int damage;
         public float fireRate;
         public float aimSpeed;
         public float bloom;

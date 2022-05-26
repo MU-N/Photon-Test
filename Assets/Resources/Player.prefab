@@ -284,6 +284,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 150
+  maxHealth: 100
   playersLayerIndex: 3
   jumpForce: 300
   groundCheckObject: {fileID: 365704484768314544}

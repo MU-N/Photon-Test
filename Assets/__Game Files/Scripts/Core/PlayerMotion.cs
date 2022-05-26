@@ -9,7 +9,10 @@ namespace Nasser.io.PUN2
         #region Inspector Variables
         [SerializeField] float moveSpeed;
 
-        [Header("Player Layer")]
+        [Header("Players Health")]
+        [SerializeField] int maxHealth; 
+
+        [Header("Players Layer")]
         [SerializeField] int playersLayerIndex;
 
         [Header("Ground Check")]
@@ -37,6 +40,8 @@ namespace Nasser.io.PUN2
 
         private bool isSprinting;
         private bool isJumping;
+
+        private int currentHealth;
 
         private Vector3 moveDirection;
 
@@ -74,6 +79,8 @@ namespace Nasser.io.PUN2
 
             camerasParent.SetActive(view.IsMine);
 
+            currentHealth = maxHealth;
+
 
         }
 
@@ -94,6 +101,8 @@ namespace Nasser.io.PUN2
         }
 
         #endregion
+
+        
 
         #region Methods
         private void GetInput()
@@ -175,6 +184,24 @@ namespace Nasser.io.PUN2
         }
 
         #endregion
+
+        #region Public Methods
+
+        [PunRPC]
+        public void TakeDamageR(int _amount)
+        {
+            if (view.IsMine)
+            {
+                currentHealth -= _amount;
+                Debug.Log("Name " + view.gameObject.name + " health " + currentHealth);
+                if (currentHealth < 0)
+                {
+                    //Todo  Die
+                }
+            }
+        }
+        #endregion
+
 
         #region Gizmos
         private void OnDrawGizmos()
