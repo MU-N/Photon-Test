@@ -1,13 +1,16 @@
 
 using UnityEngine;
+using Photon.Pun;
 
 namespace Nasser.io.PUN2
 {
-    public class PlayerMotion : MonoBehaviour
+    public class PlayerMotion : MonoBehaviourPunCallbacks
     {
         #region Inspector Variables
         [SerializeField] float moveSpeed;
 
+        [Header("Player Layer")]
+        [SerializeField] int playersLayerIndex;
 
         [Header("Ground Check")]
         [SerializeField] float jumpForce;
@@ -43,12 +46,23 @@ namespace Nasser.io.PUN2
         private const string horizontalStirng = "Horizontal";
         private const string verticalStirng = "Vertical";
 
+        PhotonView view;
+
+        private GameObject camerasParent;
+
+
+
         #endregion
 
         #region MonoBehaviour Callbacks
         private void Start()
         {
-            Camera.main.enabled = false;
+            view = GetComponent<PhotonView>();
+            if(!view.IsMine)
+                gameObject.layer = playersLayerIndex;
+
+            if (Camera.main)
+                Camera.main.enabled = false;
             rb = GetComponent<Rigidbody>();
 
             sprintSpeed = moveSpeed * 1.75f;
@@ -56,17 +70,26 @@ namespace Nasser.io.PUN2
 
             weaponParentOrigin = weaponParent.localPosition;
 
+            camerasParent = transform.GetChild(1).gameObject;
+
+            camerasParent.SetActive(view.IsMine);
+
+
         }
 
         private void Update()
         {
+            if (!view.IsMine) return;
+
             GetInput();
             CheckForSprint();
             CheckForJump();
             CheckForHeadBob();
+
         }
         private void FixedUpdate()
         {
+            if (!view.IsMine) return;
             MovePlayer();
         }
 
@@ -131,7 +154,7 @@ namespace Nasser.io.PUN2
                 idleCounter += Time.deltaTime;
                 weaponParent.localPosition = Vector3.Lerp(weaponParent.localPosition, targetHeadBobPosition, Time.deltaTime * 2f);
             }
-            else if(!isSprinting)
+            else if (!isSprinting)
             {
                 HeadBob(movementCounter, .035f, .035f);
                 movementCounter += Time.deltaTime * 3f;
@@ -143,12 +166,12 @@ namespace Nasser.io.PUN2
                 movementCounter += Time.deltaTime * 7f;
                 weaponParent.localPosition = Vector3.Lerp(weaponParent.localPosition, targetHeadBobPosition, Time.deltaTime * 10f);
             }
-            
+
         }
         private void HeadBob(float z, float xIntensity, float yIntensity)
         {
-            targetHeadBobPosition =  weaponParentOrigin + new Vector3(Mathf.Cos(z) * xIntensity, Mathf.Sin(z * 2f) * yIntensity,0f);
-           
+            targetHeadBobPosition = weaponParentOrigin + new Vector3(Mathf.Cos(z) * xIntensity, Mathf.Sin(z * 2f) * yIntensity, 0f);
+
         }
 
         #endregion

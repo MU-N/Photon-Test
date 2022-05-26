@@ -1,10 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
+using Photon.Pun;
+using System;
 
 namespace Nasser.io.PUN2
 {
-    public class Sway : MonoBehaviour
+    public class Sway : MonoBehaviourPunCallbacks
     {
         #region Inspector Variables
         [SerializeField] float intensity;
@@ -23,27 +24,37 @@ namespace Nasser.io.PUN2
         Quaternion targetQuaternion;
         Quaternion adjustQuaternionX;
         Quaternion adjustQuaternionY;
+
+        PhotonView view;
         #endregion
 
         #region MonoBehaviour Callbacks
 
         private void Start()
         {
+            view = GetComponentInParent<PhotonView>();
             originQuaternion = transform.localRotation;
         }
         void Update()
         {
+            if (view.IsMine)
+            GetInput();
             UpdateSway();
         }
+
+
         #endregion
 
         #region Methods
-
+        private void GetInput()
+        {
+            xInput = Input.GetAxis(mouseXString);
+            yInput = Input.GetAxis(mouseYString);
+        }
         private void UpdateSway()
         {
 
-            xInput = Input.GetAxis(mouseXString);
-            yInput = Input.GetAxis(mouseYString);
+            
 
             adjustQuaternionX = Quaternion.AngleAxis(-intensity * xInput, Vector3.up);
             adjustQuaternionY = Quaternion.AngleAxis(intensity * yInput, Vector3.right);

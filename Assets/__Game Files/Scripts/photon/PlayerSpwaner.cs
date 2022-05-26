@@ -7,18 +7,31 @@ namespace Nasser.io.PUN2
 {
     public class PlayerSpwaner : MonoBehaviour
     {
-        [SerializeField] GameObject[] playerPrfabs;
+        [SerializeField] GameObject playerPrfabs;
         [SerializeField] Transform[] spwanPoints;
 
+        int spwanLocationCount;
 
         int randomNumber;
         Transform spwanLocation;
         GameObject playerToSpwan;
         private void Start()
         {
-            randomNumber = Random.Range(0,spwanPoints.Length);
+            spwanLocationCount = transform.childCount;
+            spwanPoints = new Transform[spwanLocationCount];
+            for (int i = 0; i < spwanLocationCount; i++)
+            {
+                spwanPoints[i] = transform.GetChild(i);
+            }
+
+            Spwan();
+        }
+
+        private void Spwan()
+        {
+            randomNumber = Random.Range(0, spwanPoints.Length);
             spwanLocation = spwanPoints[randomNumber];
-            playerToSpwan = playerPrfabs[(int)PhotonNetwork.LocalPlayer.CustomProperties["playerAvatar"]];
+            playerToSpwan = playerPrfabs;
 
             PhotonNetwork.Instantiate(playerToSpwan.name, spwanLocation.position, spwanLocation.rotation);
         }

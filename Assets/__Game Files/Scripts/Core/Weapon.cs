@@ -1,15 +1,17 @@
 
 using UnityEngine;
+using Photon.Pun;
 
 namespace Nasser.io.PUN2
 {
-    public class Weapon : MonoBehaviour
+    public class Weapon : MonoBehaviourPunCallbacks
     {
         #region Inspector Variables
         [SerializeField] Gun[] loadout;
         [SerializeField] Transform weaponParent;
         [SerializeField] GameObject bulletHolePrefab;
         [SerializeField] LayerMask whatIsShoot;
+        [SerializeField] int playersLayer;
         #endregion
 
         #region Private Variables
@@ -20,16 +22,22 @@ namespace Nasser.io.PUN2
 
 
         private float cooldown;
+
+        PhotonView view;
         #endregion
 
         #region MonoBehaviour Callbacks
 
         private void Start()
         {
-            normalCameraTransform = transform.parent;
+            view = GetComponentInParent<PhotonView>();
+            normalCameraTransform = transform.GetChild(1).GetChild(0);
+
         }
         void Update()
         {
+            if (!view.IsMine) return;
+
             CheckInput();
         }
         #endregion
@@ -40,12 +48,13 @@ namespace Nasser.io.PUN2
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                Equip(0);
+                view.RPC("Equip", RpcTarget.All, 0);
             }
 
             Aim(Input.GetMouseButton(1));
 
         }
+        [PunRPC]
         private void Equip(int _id)
         {
             if (currentWeaponId != _id)
@@ -65,20 +74,21 @@ namespace Nasser.io.PUN2
             {
                 Transform anchor = currentWeapon.transform.GetChild(0);
                 Transform ads = currentWeapon.transform.GetChild(1).GetChild(1);
+                Transform hips = currentWeapon.transform.GetChild(1).GetChild(0);
                 if (isAiming)
                 {
                     anchor.position = Vector3.Lerp(anchor.position, ads.position, Time.deltaTime * loadout[currentWeaponId].aimSpeed);
                 }
                 else
                 {
-                    anchor.localPosition = Vector3.Lerp(anchor.localPosition, Vector3.zero, Time.deltaTime * loadout[currentWeaponId].aimSpeed);
+                    anchor.localPosition = Vector3.Lerp(anchor.localPosition, hips.localPosition, Time.deltaTime * loadout[currentWeaponId].aimSpeed);
                 }
                 CheckShootInput();
-                RestWaponPosition();
+                view.RPC("RestWaponPosition", RpcTarget.All);
             }
 
         }
-
+        [PunRPC]
         private void RestWaponPosition()
         {
             currentWeapon.transform.localPosition = Vector3.Lerp(currentWeapon.transform.localPosition, Vector3.zero, Time.deltaTime * 4f);
@@ -87,14 +97,16 @@ namespace Nasser.io.PUN2
         {
             if (Input.GetMouseButtonDown(0) && cooldown <= 0)
             {
-                Shoot();
+                view.RPC("Shoot", RpcTarget.All);
             }
             if (cooldown > 0)
                 cooldown -= Time.deltaTime;
         }
 
+        [PunRPC]
         private void Shoot()
         {
+            
             RaycastHit hit;
             GameObject tempBullectEffect;
 
@@ -110,6 +122,15 @@ namespace Nasser.io.PUN2
                 tempBullectEffect = Instantiate(bulletHolePrefab, hit.point + hit.normal * 0.001f, Quaternion.identity);
                 tempBullectEffect.transform.LookAt(hit.point + hit.normal);
                 Destroy(tempBullectEffect, 5f);
+
+                if (view.IsMine)
+                {
+                    // shootingPlayers
+                    if(hit.collider.gameObject.layer == playersLayer)
+                    {
+                        // rpc for damage
+                    }
+                }
             }
 
             // fx

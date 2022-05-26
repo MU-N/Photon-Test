@@ -1,15 +1,17 @@
 
+using Photon.Pun;
 using UnityEngine;
 
 namespace Nasser.io.PUN2
 {
-    public class PlayerLook : MonoBehaviour
+    public class PlayerLook : MonoBehaviourPunCallbacks
     {
         #region Inspector Variables
 
         public static bool isCurserLocked = true;
         [SerializeField] Transform player;
         [SerializeField] Transform cam;
+        [SerializeField] Transform weaponParent;
 
         [SerializeField] float xSensitivity;
         [SerializeField] float ySensitivity;
@@ -31,16 +33,20 @@ namespace Nasser.io.PUN2
         Quaternion XQuaternion;
         Quaternion XQuaternionDelta;
 
+        PhotonView view;
+
         #endregion
 
         #region MonoBehaviour Callbacks
         void Start()
         {
+            view = GetComponent<PhotonView>();
             camCentre = cam.localRotation;
         }
 
         void Update()
         {
+            if (!view.IsMine) return;
             SetY();
             SetX();
             UpdateLockCurser();
@@ -58,6 +64,7 @@ namespace Nasser.io.PUN2
             {
                 cam.localRotation = yQuaternionDelta;
             }
+            weaponParent.rotation = cam.rotation;
         }
 
         void SetX()
