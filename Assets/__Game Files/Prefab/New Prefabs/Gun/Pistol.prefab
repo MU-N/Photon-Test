@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 964277697839493646}
   - component: {fileID: 785408588069240974}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Pistol
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -59,7 +59,7 @@ GameObject:
   - component: {fileID: 964277697842166613}
   - component: {fileID: 964277697842166616}
   - component: {fileID: 964277697842166619}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: er
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -142,7 +142,7 @@ GameObject:
   - component: {fileID: 964277697884243906}
   - component: {fileID: 964277697884243905}
   - component: {fileID: 964277697884243904}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -224,7 +224,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 964277698146861203}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Hip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -255,7 +255,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 964277698188972401}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -287,7 +287,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 964277698310346260}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Resorses
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -318,7 +318,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 964277698480739343}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: ADS
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -349,7 +349,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 964277698713710334}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Design
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -381,7 +381,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 964277699189235036}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Satate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -414,7 +414,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 964277699650326596}
-  m_Layer: 3
+  m_Layer: 7
   m_Name: Anchor
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -10,6 +10,9 @@ namespace Nasser.io.PUN2
         public string gunName;
         public float fireRate;
         public float aimSpeed;
+        public float bloom;
+        public float recoil;
+        public float kickback;
         public GameObject objectPrefab;
     }
 }
