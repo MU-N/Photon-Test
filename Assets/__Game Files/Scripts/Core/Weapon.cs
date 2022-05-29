@@ -1,6 +1,8 @@
 
 using UnityEngine;
 using Photon.Pun;
+using System.Collections;
+using TMPro;
 
 namespace Nasser.io.PUN2
 {
@@ -23,6 +25,8 @@ namespace Nasser.io.PUN2
 
         private float cooldown;
 
+        private bool isReloading;
+
         PhotonView view;
         #endregion
 
@@ -31,13 +35,17 @@ namespace Nasser.io.PUN2
         private void Start()
         {
             view = GetComponentInParent<PhotonView>();
+            if (!view.IsMine) return;
+            foreach (Gun item in loadout)
+                item.Initalize();
+
+            
             normalCameraTransform = transform.GetChild(1).GetChild(0);
 
+            Equip(0);
         }
         void Update()
         {
-            if (!view.IsMine) return;
-
             CheckInput();
         }
         #endregion
@@ -46,7 +54,7 @@ namespace Nasser.io.PUN2
 
         private void CheckInput()
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1))
+            if (view.IsMine && Input.GetKeyDown(KeyCode.Alpha1))
             {
                 view.RPC("Equip", RpcTarget.All, 0);
             }
@@ -59,6 +67,9 @@ namespace Nasser.io.PUN2
         {
             if (currentWeaponId != _id)
             {
+                if (isReloading)
+                    StopCoroutine("Reload");
+
                 Destroy(currentWeapon);
                 currentWeaponId = _id;
                 GameObject obj = Instantiate(loadout[_id].objectPrefab, weaponParent.position, weaponParent.rotation, weaponParent);
@@ -72,19 +83,26 @@ namespace Nasser.io.PUN2
         {
             if (currentWeapon != null)
             {
-                Transform anchor = currentWeapon.transform.GetChild(0);
-                Transform ads = currentWeapon.transform.GetChild(1).GetChild(1);
-                Transform hips = currentWeapon.transform.GetChild(1).GetChild(0);
-                if (isAiming)
+                if (view.IsMine)
                 {
-                    anchor.position = Vector3.Lerp(anchor.position, ads.position, Time.deltaTime * loadout[currentWeaponId].aimSpeed);
+                    Transform anchor = currentWeapon.transform.GetChild(0);
+                    Transform ads = currentWeapon.transform.GetChild(1).GetChild(1);
+                    Transform hips = currentWeapon.transform.GetChild(1).GetChild(0);
+                    if (isAiming)
+                    {
+                        anchor.position = Vector3.Lerp(anchor.position, ads.position, Time.deltaTime * loadout[currentWeaponId].aimSpeed);
+                    }
+                    else
+                    {
+                        anchor.localPosition = Vector3.Lerp(anchor.localPosition, hips.localPosition, Time.deltaTime * loadout[currentWeaponId].aimSpeed);
+                    }
+
+                    CheckShootInput();
+                    CheckReloadInput();
                 }
-                else
-                {
-                    anchor.localPosition = Vector3.Lerp(anchor.localPosition, hips.localPosition, Time.deltaTime * loadout[currentWeaponId].aimSpeed);
-                }
-                CheckShootInput();
-                 view.RPC("RestWaponPosition", RpcTarget.All);
+                if (view.IsMine)
+                    view.RPC("RestWaponPosition", RpcTarget.All);
+
                 //RestWaponPosition();
             }
 
@@ -98,16 +116,43 @@ namespace Nasser.io.PUN2
         {
             if (Input.GetMouseButtonDown(0) && cooldown <= 0)
             {
-                view.RPC("Shoot", RpcTarget.All);
+                if (loadout[currentWeaponId].FireBullet())
+                    view.RPC("Shoot", RpcTarget.All);
+
+                else
+                    StartCoroutine(Reload(loadout[currentWeaponId].reloadTime));
             }
             if (cooldown > 0)
                 cooldown -= Time.deltaTime;
+        }
+        private void CheckReloadInput()
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                StartCoroutine(Reload(loadout[currentWeaponId].reloadTime));
+            }
+
+        }
+
+        IEnumerator Reload(float waitAmount = 2f)
+        {
+            if (loadout[currentWeaponId].GetStash() > 0)
+            {
+                isReloading = true;
+                currentWeapon.SetActive(false);
+
+                yield return new WaitForSeconds(waitAmount);
+
+                isReloading = false;
+                loadout[currentWeaponId].Reload();
+                currentWeapon.SetActive(true);
+            }
         }
 
         [PunRPC]
         private void Shoot()
         {
-            
+
             RaycastHit hit;
             GameObject tempBullectEffect;
 
@@ -122,12 +167,12 @@ namespace Nasser.io.PUN2
             {
                 tempBullectEffect = Instantiate(bulletHolePrefab, hit.point + hit.normal * 0.001f, Quaternion.identity);
                 tempBullectEffect.transform.LookAt(hit.point + hit.normal);
-                Destroy(tempBullectEffect, 5f);
+                Destroy(tempBullectEffect, 0.5f);
 
                 if (view.IsMine)
                 {
                     // shootingPlayers
-                    if(hit.collider.gameObject.layer == playersLayer)
+                    if (hit.collider.gameObject.layer == playersLayer)
                     {
                         hit.collider.gameObject.GetPhotonView().RPC("TakeDamage", RpcTarget.All, loadout[currentWeaponId].damage);
                     }
@@ -144,8 +189,18 @@ namespace Nasser.io.PUN2
         [PunRPC]
         private void TakeDamage(int _amount)
         {
-            GetComponent<PlayerMotion>().TakeDamageR(_amount);
+            GetComponent<PlayerController>().TakeDamageR(_amount);
         }
+        #endregion
+
+        #region public methods
+        public void UpdateAmmo( TMP_Text ammoChnage)
+        {
+            
+            ammoChnage.text = loadout[currentWeaponId].GetClip().ToString("D2") +" / "+ loadout[currentWeaponId].GetStash().ToString("D2");
+           
+        }
+
         #endregion
 
     }

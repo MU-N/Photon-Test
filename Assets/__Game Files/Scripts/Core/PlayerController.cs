@@ -1,16 +1,18 @@
 
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.UI;
+using TMPro;
 
 namespace Nasser.io.PUN2
 {
-    public class PlayerMotion : MonoBehaviourPunCallbacks
+    public class PlayerController : MonoBehaviourPunCallbacks
     {
         #region Inspector Variables
         [SerializeField] float moveSpeed;
 
         [Header("Players Health")]
-        [SerializeField] int maxHealth; 
+        [SerializeField] int maxHealth;
 
         [Header("Players Layer")]
         [SerializeField] int playersLayerIndex;
@@ -23,6 +25,11 @@ namespace Nasser.io.PUN2
 
         [Header("Weapon")]
         [SerializeField] Transform weaponParent;
+
+
+        [Header("Slide")]
+        [SerializeField] float slideLength;
+        [SerializeField] float slideSpeed;
         #endregion
 
         #region Private Variables
@@ -39,6 +46,7 @@ namespace Nasser.io.PUN2
         private float idleCounter;
 
         private bool isSprinting;
+        private bool isSliding;
         private bool isJumping;
 
         private int currentHealth;
@@ -55,6 +63,20 @@ namespace Nasser.io.PUN2
 
         private GameObject camerasParent;
 
+        private PlayerSpwaner manager;
+        private Weapon weapon;
+
+        private Transform Canvas;
+        private Image hpImage;
+        private TMP_Text hpText;
+        private TMP_Text ammoText;
+
+
+        private bool slideing;
+        private float slideCounter;
+        private Vector3 slideDirection;
+
+
 
 
         #endregion
@@ -63,13 +85,17 @@ namespace Nasser.io.PUN2
         private void Start()
         {
             view = GetComponent<PhotonView>();
-            if(!view.IsMine)
+            if (!view.IsMine)
+            {
                 gameObject.layer = playersLayerIndex;
+                return;
+            }
 
             if (Camera.main)
                 Camera.main.enabled = false;
             rb = GetComponent<Rigidbody>();
-
+            weapon = GetComponent<Weapon>();
+            manager = GameObject.Find("Spwan Locations").GetComponent<PlayerSpwaner>();
             sprintSpeed = moveSpeed * 1.75f;
             normalSpeed = moveSpeed;
 
@@ -81,8 +107,16 @@ namespace Nasser.io.PUN2
 
             currentHealth = maxHealth;
 
+            Canvas = GameObject.Find("Canvas").transform;
+            hpImage = Canvas.GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>();
+            hpText = Canvas.GetChild(0).GetChild(0).GetChild(1).GetComponent<TMP_Text>();
+            ammoText = Canvas.GetChild(1).GetChild(0).GetChild(0).GetComponent<TMP_Text>();
+            UpdateHealth();
+
 
         }
+
+
 
         private void Update()
         {
@@ -90,28 +124,46 @@ namespace Nasser.io.PUN2
 
             GetInput();
             CheckForSprint();
+            CheckForSliding();
             CheckForJump();
             CheckForHeadBob();
+            UpdateHealth();
+            UpdateAmmo();
 
         }
         private void FixedUpdate()
         {
             if (!view.IsMine) return;
             MovePlayer();
+
         }
 
         #endregion
 
-        
+
 
         #region Methods
         private void GetInput()
         {
             horizontalInput = Input.GetAxisRaw(horizontalStirng);
             verticalInput = Input.GetAxisRaw(verticalStirng);
+            if (!slideing)
+            {
+                moveDirection = new Vector3(horizontalInput, 0, verticalInput);
+                moveDirection.Normalize();
+            }
 
-            moveDirection = new Vector3(horizontalInput, 0, verticalInput);
-            moveDirection.Normalize();
+            else
+            {
+                moveDirection = slideDirection;
+                moveSpeed = slideSpeed;
+                slideCounter -=Time.deltaTime;
+                if(slideCounter<0)
+                {
+                    slideing = false;
+                    moveSpeed = normalSpeed;
+                }
+            }
 
         }
 
@@ -127,6 +179,19 @@ namespace Nasser.io.PUN2
             {
                 moveSpeed = normalSpeed;
             }
+        }
+
+        private void CheckForSliding()
+        {
+            isSliding = Input.GetKey(KeyCode.LeftControl) ;
+            if (isSprinting && isSliding && !slideing )  
+            {
+
+                slideing = true;
+                slideDirection = transform.TransformDirection(moveDirection);
+                slideCounter = slideLength;
+            }
+
         }
 
         private void CheckForJump()
@@ -149,6 +214,7 @@ namespace Nasser.io.PUN2
 
         private void MovePlayer()
         {
+
             Vector3 motionVelocity = transform.TransformDirection(moveDirection) * moveSpeed * Time.deltaTime;
             motionVelocity.y = rb.velocity.y;
             rb.velocity = motionVelocity;
@@ -183,6 +249,21 @@ namespace Nasser.io.PUN2
 
         }
 
+        private void UpdateHealth()
+        {
+            hpImage.fillAmount = Mathf.Lerp(hpImage.fillAmount, (currentHealth / 100.0f), Time.deltaTime * 7f);
+            //hpText.text = currentHealth.ToString();
+            hpText.text = CustomLerp(hpImage.fillAmount * 100.0f, currentHealth, Time.deltaTime * 7f).ToString("F0");
+        }
+
+        private void UpdateAmmo()
+        {
+            weapon.UpdateAmmo(ammoText);
+        }
+
+
+
+
         #endregion
 
         #region Public Methods
@@ -193,13 +274,21 @@ namespace Nasser.io.PUN2
             if (view.IsMine)
             {
                 currentHealth -= _amount;
-                Debug.Log("Name " + view.gameObject.name + " health " + currentHealth);
                 if (currentHealth < 0)
                 {
-                    //Todo  Die
+                    manager.Spwan();
+                    PhotonNetwork.Destroy(gameObject);
                 }
+                UpdateHealth();
             }
         }
+
+        private float CustomLerp(float a, float b, float t)
+        {
+            return a + (b - a) * Mathf.Clamp01(t);
+        }
+
+
         #endregion
 
 

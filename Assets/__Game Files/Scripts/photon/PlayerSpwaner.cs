@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+
 using UnityEngine;
 using Photon.Pun;
 
@@ -27,7 +26,7 @@ namespace Nasser.io.PUN2
             Spwan();
         }
 
-        private void Spwan()
+        public void Spwan()
         {
             randomNumber = Random.Range(0, spwanPoints.Length);
             spwanLocation = spwanPoints[randomNumber];
