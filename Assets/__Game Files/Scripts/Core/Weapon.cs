@@ -14,6 +14,8 @@ namespace Nasser.io.PUN2
         [SerializeField] GameObject bulletHolePrefab;
         [SerializeField] LayerMask whatIsShoot;
         [SerializeField] int playersLayer;
+
+        public bool isAiming;
         #endregion
 
         #region Private Variables
@@ -39,7 +41,7 @@ namespace Nasser.io.PUN2
             foreach (Gun item in loadout)
                 item.Initalize();
 
-            
+
             normalCameraTransform = transform.GetChild(1).GetChild(0);
 
             Equip(0);
@@ -55,9 +57,10 @@ namespace Nasser.io.PUN2
         private void CheckInput()
         {
             if (view.IsMine && Input.GetKeyDown(KeyCode.Alpha1))
-            {
                 view.RPC("Equip", RpcTarget.All, 0);
-            }
+
+            if (view.IsMine && Input.GetKeyDown(KeyCode.Alpha2))
+                view.RPC("Equip", RpcTarget.All, 1);
 
             Aim(Input.GetMouseButton(1));
 
@@ -79,8 +82,9 @@ namespace Nasser.io.PUN2
             }
         }
 
-        private void Aim(bool isAiming)
+        private void Aim(bool _isAiming)
         {
+            isAiming = _isAiming;
             if (currentWeapon != null)
             {
                 if (view.IsMine)
@@ -114,7 +118,20 @@ namespace Nasser.io.PUN2
         }
         private void CheckShootInput()
         {
-            if (Input.GetMouseButtonDown(0) && cooldown <= 0)
+            if (loadout[currentWeaponId].burst != 1)
+            {
+                if (Input.GetMouseButtonDown(0) && cooldown <= 0)
+                {
+
+                    if (loadout[currentWeaponId].FireBullet())
+                        view.RPC("Shoot", RpcTarget.All);
+
+                    else
+                        StartCoroutine(Reload(loadout[currentWeaponId].reloadTime));
+
+                }
+            }
+            else if (Input.GetMouseButton(0) && cooldown <= 0)
             {
                 if (loadout[currentWeaponId].FireBullet())
                     view.RPC("Shoot", RpcTarget.All);
@@ -194,11 +211,11 @@ namespace Nasser.io.PUN2
         #endregion
 
         #region public methods
-        public void UpdateAmmo( TMP_Text ammoChnage)
+        public void UpdateAmmo(TMP_Text ammoChnage)
         {
-            
-            ammoChnage.text = loadout[currentWeaponId].GetClip().ToString("D2") +" / "+ loadout[currentWeaponId].GetStash().ToString("D2");
-           
+
+            ammoChnage.text = loadout[currentWeaponId].GetClip().ToString("D2") + " / " + loadout[currentWeaponId].GetStash().ToString("D2");
+
         }
 
         #endregion

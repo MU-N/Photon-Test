@@ -27,9 +27,7 @@ namespace Nasser.io.PUN2
         [SerializeField] Transform weaponParent;
 
 
-        [Header("Slide")]
-        [SerializeField] float slideLength;
-        [SerializeField] float slideSpeed;
+
         #endregion
 
         #region Private Variables
@@ -46,7 +44,7 @@ namespace Nasser.io.PUN2
         private float idleCounter;
 
         private bool isSprinting;
-        private bool isSliding;
+
         private bool isJumping;
 
         private int currentHealth;
@@ -70,13 +68,6 @@ namespace Nasser.io.PUN2
         private Image hpImage;
         private TMP_Text hpText;
         private TMP_Text ammoText;
-
-
-        private bool slideing;
-        private float slideCounter;
-        private Vector3 slideDirection;
-
-
 
 
         #endregion
@@ -124,8 +115,7 @@ namespace Nasser.io.PUN2
 
             GetInput();
             CheckForSprint();
-            CheckForSliding();
-            CheckForJump();
+            CheckForJumpInput();
             CheckForHeadBob();
             UpdateHealth();
             UpdateAmmo();
@@ -135,7 +125,7 @@ namespace Nasser.io.PUN2
         {
             if (!view.IsMine) return;
             MovePlayer();
-
+            CheckForJumpPhysics();
         }
 
         #endregion
@@ -147,23 +137,12 @@ namespace Nasser.io.PUN2
         {
             horizontalInput = Input.GetAxisRaw(horizontalStirng);
             verticalInput = Input.GetAxisRaw(verticalStirng);
-            if (!slideing)
-            {
-                moveDirection = new Vector3(horizontalInput, 0, verticalInput);
-                moveDirection.Normalize();
-            }
 
-            else
-            {
-                moveDirection = slideDirection;
-                moveSpeed = slideSpeed;
-                slideCounter -=Time.deltaTime;
-                if(slideCounter<0)
-                {
-                    slideing = false;
-                    moveSpeed = normalSpeed;
-                }
-            }
+
+            moveDirection = new Vector3(horizontalInput, 0, verticalInput);
+            moveDirection.Normalize();
+
+
 
         }
 
@@ -181,35 +160,27 @@ namespace Nasser.io.PUN2
             }
         }
 
-        private void CheckForSliding()
-        {
-            isSliding = Input.GetKey(KeyCode.LeftControl) ;
-            if (isSprinting && isSliding && !slideing )  
-            {
 
-                slideing = true;
-                slideDirection = transform.TransformDirection(moveDirection);
-                slideCounter = slideLength;
-            }
 
-        }
-
-        private void CheckForJump()
+        private void CheckForJumpInput()
         {
             Collider[] colliders = Physics.OverlapSphere(groundCheckObject.position, groundCheckRaduis, whatIsGround);
             if (colliders.Length != 0)
             {
-
-
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
-                    rb.AddForce(Vector3.up * jumpForce);
                     isJumping = true;
                 }
             }
             else
                 isJumping = false;
 
+        }
+
+        private void CheckForJumpPhysics()
+        {
+            if(isJumping)
+            rb.AddForce(Vector3.up * jumpForce);
         }
 
         private void MovePlayer()
@@ -245,7 +216,10 @@ namespace Nasser.io.PUN2
         }
         private void HeadBob(float z, float xIntensity, float yIntensity)
         {
-            targetHeadBobPosition = weaponParentOrigin + new Vector3(Mathf.Cos(z) * xIntensity, Mathf.Sin(z * 2f) * yIntensity, 0f);
+            float aimAdj = 1f;
+            if (weapon.isAiming) aimAdj = 0.1f;
+
+            targetHeadBobPosition = weaponParentOrigin + new Vector3(Mathf.Cos(z) * xIntensity * aimAdj, Mathf.Sin(z * 2f) * yIntensity * aimAdj, 0f);
 
         }
 

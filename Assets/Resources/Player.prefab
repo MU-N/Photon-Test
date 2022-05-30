@@ -289,13 +289,11 @@ MonoBehaviour:
   playersLayerIndex: 3
   jumpForce: 300
   groundCheckObject: {fileID: 365704484768314544}
-  groundCheckRaduis: 0.05
+  groundCheckRaduis: 0.03
   whatIsGround:
     serializedVersion: 2
     m_Bits: 64
   weaponParent: {fileID: 365704486493995489}
-  slideLength: 1.5
-  slideSpeed: 300
 --- !u!114 &365704485340154426
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -327,6 +325,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loadout:
+  - {fileID: 11400000, guid: 90acb22762fda6f4c94bad04aa5605ac, type: 2}
   - {fileID: 11400000, guid: a7ad44bbbd46ec64ba199eba34062f23, type: 2}
   weaponParent: {fileID: 365704486493995489}
   bulletHolePrefab: {fileID: 5820591663999682371, guid: 5141a996dc253634da1a8cc685f53291,
@@ -335,6 +334,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 72
   playersLayer: 3
+  isAiming: 0
 --- !u!114 &4791672500030663964
 MonoBehaviour:
   m_ObjectHideFlags: 0
