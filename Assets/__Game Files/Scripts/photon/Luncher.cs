@@ -36,8 +36,6 @@ namespace Nasser.io.PUN2
         public override void OnConnectedToMaster()
         {
             /*SceneManager.LoadScene("Lobby");*/
-            OnClickJoin();
-            feedbackText.text += "Connected\n";
         }
 
 

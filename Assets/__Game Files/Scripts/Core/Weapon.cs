@@ -104,14 +104,12 @@ namespace Nasser.io.PUN2
                     CheckShootInput();
                     CheckReloadInput();
                 }
-                if (view.IsMine)
-                    view.RPC("RestWaponPosition", RpcTarget.All);
 
-                //RestWaponPosition();
+
+                RestWaponPosition();
             }
 
         }
-        [PunRPC]
         private void RestWaponPosition()
         {
             currentWeapon.transform.localPosition = Vector3.Lerp(currentWeapon.transform.localPosition, Vector3.zero, Time.deltaTime * 4f);

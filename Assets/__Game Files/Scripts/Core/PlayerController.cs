@@ -3,10 +3,11 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 namespace Nasser.io.PUN2
 {
-    public class PlayerController : MonoBehaviourPunCallbacks
+    public class PlayerController : MonoBehaviourPunCallbacks, IPunObservable
     {
         #region Inspector Variables
         [SerializeField] float moveSpeed;
@@ -69,11 +70,14 @@ namespace Nasser.io.PUN2
         private TMP_Text hpText;
         private TMP_Text ammoText;
 
+        private float aimAngle;
+
 
         #endregion
 
         #region MonoBehaviour Callbacks
-        private void Start()
+
+        private void Awake()
         {
             view = GetComponent<PhotonView>();
             if (!view.IsMine)
@@ -81,7 +85,7 @@ namespace Nasser.io.PUN2
                 gameObject.layer = playersLayerIndex;
                 return;
             }
-
+            
             if (Camera.main)
                 Camera.main.enabled = false;
             rb = GetComponent<Rigidbody>();
@@ -96,22 +100,31 @@ namespace Nasser.io.PUN2
 
             camerasParent.SetActive(view.IsMine);
 
-            currentHealth = maxHealth;
-
             Canvas = GameObject.Find("Canvas").transform;
             hpImage = Canvas.GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>();
             hpText = Canvas.GetChild(0).GetChild(0).GetChild(1).GetComponent<TMP_Text>();
             ammoText = Canvas.GetChild(1).GetChild(0).GetChild(0).GetComponent<TMP_Text>();
-            UpdateHealth();
+
+            currentHealth = maxHealth;
 
 
+           
         }
+        private void Start()
+        {
+            UpdateHealth();
+        }
+
 
 
 
         private void Update()
         {
-            if (!view.IsMine) return;
+            if (!view.IsMine)
+            {
+                RefreshMultiPlayerState();
+                return;
+            }
 
             GetInput();
             CheckForSprint();
@@ -121,6 +134,9 @@ namespace Nasser.io.PUN2
             UpdateAmmo();
 
         }
+
+
+
         private void FixedUpdate()
         {
             if (!view.IsMine) return;
@@ -179,8 +195,8 @@ namespace Nasser.io.PUN2
 
         private void CheckForJumpPhysics()
         {
-            if(isJumping)
-            rb.AddForce(Vector3.up * jumpForce);
+            if (isJumping)
+                rb.AddForce(Vector3.up * jumpForce);
         }
 
         private void MovePlayer()
@@ -248,7 +264,7 @@ namespace Nasser.io.PUN2
             if (view.IsMine)
             {
                 currentHealth -= _amount;
-                if (currentHealth < 0)
+                if (currentHealth <= 0)
                 {
                     manager.Spwan();
                     PhotonNetwork.Destroy(gameObject);
@@ -262,7 +278,33 @@ namespace Nasser.io.PUN2
             return a + (b - a) * Mathf.Clamp01(t);
         }
 
+        private void RefreshMultiPlayerState()
+        {
+            float cacheEulry = weaponParent.localEulerAngles.y;
+            Quaternion targetRotation = Quaternion.identity * Quaternion.AngleAxis(aimAngle, Vector3.right);
+            weaponParent.rotation = Quaternion.Slerp(weaponParent.rotation, targetRotation, Time.deltaTime * 8f);
 
+            Vector3 finalRotation = weaponParent.localEulerAngles;
+            finalRotation.y = cacheEulry;
+
+            weaponParent.localEulerAngles = finalRotation;
+        }
+
+
+        #endregion
+
+        #region Pun Observable
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            if (stream.IsWriting)
+            {
+                stream.SendNext(weaponParent.transform.localEulerAngles.x * 100f);
+            }
+            else
+            {
+                aimAngle = ((int)stream.ReceiveNext()) / 100f;
+            }
+        }
         #endregion
 
 
@@ -272,6 +314,8 @@ namespace Nasser.io.PUN2
             Gizmos.color = Color.green;
             Gizmos.DrawSphere(groundCheckObject.position, groundCheckRaduis);
         }
+
+
         #endregion
     }
 }
